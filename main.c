@@ -269,8 +269,6 @@ static void log_init(void)
  */
 int main(void)
 {
-    bsp_board_init(BSP_INIT_LEDS);
-
     log_init();
     utils_setup();
     softdevice_setup();
