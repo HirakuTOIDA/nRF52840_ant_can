@@ -83,7 +83,7 @@
 // <e> BSP_BTN_ANT_ENABLED - bsp_btn_ant - Button Control for ANT
 //==========================================================
 #ifndef BSP_BTN_ANT_ENABLED
-#define BSP_BTN_ANT_ENABLED 1
+#define BSP_BTN_ANT_ENABLED 0
 #endif
 // <o> BSP_BTN_ANT_CONFIG_WAKEUP_BTN_ID - Wakeup button ID. 
 #ifndef BSP_BTN_ANT_CONFIG_WAKEUP_BTN_ID
@@ -1415,7 +1415,7 @@
 // <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_UART_ENABLED
-#define NRF_LOG_BACKEND_UART_ENABLED 1
+#define NRF_LOG_BACKEND_UART_ENABLED 0
 #endif
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN

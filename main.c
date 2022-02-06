@@ -76,6 +76,8 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#define APP_ANT_OBSERVER_PRIO       1                                                               /**< Application's ANT observer priority. You shouldn't need to modify this value. */
+
 /** @snippet [ANT BPWR RX Instance] */
 void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event);
 
@@ -91,7 +93,7 @@ static ant_bpwr_profile_t m_ant_bpwr;
 /** @snippet [ANT BPWR RX Instance] */
 
 
-NRF_SDH_ANT_OBSERVER(m_ant_observer, ANT_BPWR_ANT_OBSERVER_PRIO,
+NRF_SDH_ANT_OBSERVER(m_ant_bpwr_observer, ANT_BPWR_ANT_OBSERVER_PRIO,
                      ant_bpwr_disp_evt_handler, &m_ant_bpwr);
 
 
@@ -134,8 +136,8 @@ static bool shutdown_handler(nrf_pwr_mgmt_evt_t event)
     switch (event)
     {
         case NRF_PWR_MGMT_EVT_PREPARE_WAKEUP:
-            err_code = bsp_btn_ant_sleep_mode_prepare();
-            APP_ERROR_CHECK(err_code);
+            //err_code = bsp_btn_ant_sleep_mode_prepare();
+            //APP_ERROR_CHECK(err_code);
             break;
 
         default:
@@ -146,6 +148,31 @@ static bool shutdown_handler(nrf_pwr_mgmt_evt_t event)
 }
 
 NRF_PWR_MGMT_HANDLER_REGISTER(shutdown_handler, APP_SHUTDOWN_HANDLER_PRIORITY);
+
+/**@brief Function for handling a ANT stack event.
+ *
+ * @param[in] p_ant_evt  ANT stack event.
+ * @param[in] p_context  Context.
+ */
+static void ant_evt_handler(ant_evt_t * p_ant_evt, void * p_context)
+{
+    ret_code_t err_code;
+    switch (p_ant_evt->event)
+    {
+        case EVENT_CHANNEL_CLOSED:
+            err_code = ant_bpwr_disp_open(&m_ant_bpwr);
+            APP_ERROR_CHECK(err_code);
+            err_code = ant_state_indicator_channel_opened();
+            APP_ERROR_CHECK(err_code);
+            break;
+
+        default:
+            // No implementation needed
+            break;
+    }
+}
+
+NRF_SDH_ANT_OBSERVER(m_ant_observer, APP_ANT_OBSERVER_PRIO, ant_evt_handler, NULL);
 
 /**@brief Function for handling Bicycle Power profile's events
  *
@@ -171,6 +198,7 @@ void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
             /* fall through */
         case ANT_BPWR_PAGE_81_UPDATED:
             // data actualization
+            bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page was updated");
             break;
 
@@ -205,12 +233,12 @@ static void utils_setup(void)
     err_code = nrf_pwr_mgmt_init();
     APP_ERROR_CHECK(err_code);
 
-    err_code = bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS,
+    err_code = bsp_init(BSP_INIT_LEDS,
                         bsp_evt_handler);
     APP_ERROR_CHECK(err_code);
 
-    err_code = bsp_btn_ant_init(m_ant_bpwr.channel_number, BPWR_DISP_CHANNEL_TYPE);
-    APP_ERROR_CHECK(err_code);
+    //err_code = bsp_btn_ant_init(m_ant_bpwr.channel_number, BPWR_DISP_CHANNEL_TYPE);
+    //APP_ERROR_CHECK(err_code);
 
     err_code = ant_state_indicator_init(m_ant_bpwr.channel_number, BPWR_DISP_CHANNEL_TYPE);
     APP_ERROR_CHECK(err_code);
@@ -269,6 +297,7 @@ static void log_init(void)
  */
 int main(void)
 {
+    uint8_t i = 0;
     log_init();
     utils_setup();
     softdevice_setup();
@@ -278,6 +307,7 @@ int main(void)
 
     for (;;)
     {
+        NRF_LOG_INFO("Running. %d", i++);
         NRF_LOG_FLUSH();
         nrf_pwr_mgmt_run();
     }
