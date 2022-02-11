@@ -72,11 +72,21 @@
 #include "bsp_btn_ant.h"
 #include "ant_state_indicator.h"
 
+#include "nrf_drv_spi.h"
+
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+#include "MCP2515.h"
+#include "can.h"
+
 #define APP_ANT_OBSERVER_PRIO       1                                                               /**< Application's ANT observer priority. You shouldn't need to modify this value. */
+#define SPI_INSTANCE  0 /**< SPI instance index. */
+const nrf_drv_spi_t spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);  /**< SPI instance. */
+static volatile bool spi_xfer_done;  /**< Flag used to indicate that SPI instance completed the transfer. */
+
+uint8_t m_rx_buf[3];    /**< RX buffer. */
 
 /** @snippet [ANT BPWR RX Instance] */
 void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event);
@@ -179,27 +189,50 @@ NRF_SDH_ANT_OBSERVER(m_ant_observer, APP_ANT_OBSERVER_PRIO, ant_evt_handler, NUL
  */
 void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
 {
+    uint8_t dat[32] = {"T"};
     nrf_pwr_mgmt_feed();
 
     switch (event)
     {
         case ANT_BPWR_PAGE_1_UPDATED:
             // calibration data received from sensor
+            bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Received calibration data");
             break;
 
         case ANT_BPWR_PAGE_16_UPDATED:
-            /* fall through */
+            // data actualization
+            //*(dat + 8) = p_profile->page_16.pedal_power.byte;
+            //*(dat + 9) = p_profile->page_16.update_event_count;
+            //*((uint16_t *)(dat + 10)) = p_profile->page_16.accumulated_power;
+            //*((uint16_t *)(dat + 12)) = p_profile->page_16.instantaneous_power;
+            //can_send(dat, 8);
+            bsp_board_led_invert(BSP_BOARD_LED_3);
+            NRF_LOG_DEBUG("Page 16 was updated");
+            break;
+
         case ANT_BPWR_PAGE_17_UPDATED:
-            /* fall through */
+            // data actualization
+            bsp_board_led_invert(BSP_BOARD_LED_3);
+            NRF_LOG_DEBUG("Page 17 was updated");
+            break;
+
         case ANT_BPWR_PAGE_18_UPDATED:
-            /* fall through */
+            // data actualization
+            bsp_board_led_invert(BSP_BOARD_LED_3);
+            NRF_LOG_DEBUG("Page 18 was updated");
+            break;
+
         case ANT_BPWR_PAGE_80_UPDATED:
-            /* fall through */
+            // data actualization
+            bsp_board_led_invert(BSP_BOARD_LED_3);
+            NRF_LOG_DEBUG("Page 80 was updated");
+            break;
+
         case ANT_BPWR_PAGE_81_UPDATED:
             // data actualization
             bsp_board_led_invert(BSP_BOARD_LED_3);
-            NRF_LOG_DEBUG("Page was updated");
+            NRF_LOG_DEBUG("Page 81 was updated");
             break;
 
         case ANT_BPWR_CALIB_TIMEOUT:
@@ -299,11 +332,21 @@ int main(void)
 {
     uint8_t i = 0;
     log_init();
+
+    nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
+    spi_config.ss_pin   = SPI_SS_PIN;
+    spi_config.miso_pin = SPI_MISO_PIN;
+    spi_config.mosi_pin = SPI_MOSI_PIN;
+    spi_config.sck_pin  = SPI_SCK_PIN;
+    APP_ERROR_CHECK(nrf_drv_spi_init(&spi, &spi_config, NULL, NULL));
+
+    MCP2515_init(&spi);
+
     utils_setup();
     softdevice_setup();
     profile_setup();
 
-    NRF_LOG_INFO("ANT+ Bicycle Power RX example started.");
+    NRF_LOG_INFO("ANT+ Bicycle Power RX CAN started.");
 
     for (;;)
     {
