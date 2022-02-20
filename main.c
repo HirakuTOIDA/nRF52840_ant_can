@@ -79,7 +79,6 @@
 #include "nrf_log_default_backends.h"
 
 #include "MCP2515.h"
-//#include "can.h"
 
 #define APP_ANT_OBSERVER_PRIO       1                                                               /**< Application's ANT observer priority. You shouldn't need to modify this value. */
 #define SPI_INSTANCE  0 /**< SPI instance index. */
@@ -146,8 +145,6 @@ static bool shutdown_handler(nrf_pwr_mgmt_evt_t event)
     switch (event)
     {
         case NRF_PWR_MGMT_EVT_PREPARE_WAKEUP:
-            //err_code = bsp_btn_ant_sleep_mode_prepare();
-            //APP_ERROR_CHECK(err_code);
             break;
 
         default:
@@ -196,37 +193,31 @@ void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
     {
         case ANT_BPWR_PAGE_1_UPDATED:
             // calibration data received from sensor
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Received calibration data");
             break;
 
         case ANT_BPWR_PAGE_16_UPDATED:
             // data actualization
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 16 was updated");
             break;
 
         case ANT_BPWR_PAGE_17_UPDATED:
             // data actualization
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 17 was updated");
             break;
 
         case ANT_BPWR_PAGE_18_UPDATED:
             // data actualization
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 18 was updated");
             break;
 
         case ANT_BPWR_PAGE_80_UPDATED:
             // data actualization
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 80 was updated");
             break;
 
         case ANT_BPWR_PAGE_81_UPDATED:
             // data actualization
-            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 81 was updated");
             break;
 
@@ -264,9 +255,6 @@ static void utils_setup(void)
     err_code = bsp_init(BSP_INIT_LEDS,
                         bsp_evt_handler);
     APP_ERROR_CHECK(err_code);
-
-    //err_code = bsp_btn_ant_init(m_ant_bpwr.channel_number, BPWR_DISP_CHANNEL_TYPE);
-    //APP_ERROR_CHECK(err_code);
 
     err_code = ant_state_indicator_init(m_ant_bpwr.channel_number, BPWR_DISP_CHANNEL_TYPE);
     APP_ERROR_CHECK(err_code);
@@ -325,7 +313,6 @@ static void log_init(void)
  */
 int main(void)
 {
-    //uint8_t i = 0;
     log_init();
 
     nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
@@ -346,7 +333,6 @@ int main(void)
 
     for (;;)
     {
-        //NRF_LOG_INFO("Running. %d", i++);
         NRF_LOG_FLUSH();
         nrf_pwr_mgmt_run();
     }
