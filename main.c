@@ -196,7 +196,7 @@ void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
     {
         case ANT_BPWR_PAGE_1_UPDATED:
             // calibration data received from sensor
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Received calibration data");
             break;
 
@@ -207,31 +207,31 @@ void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
             //*((uint16_t *)(dat + 10)) = p_profile->page_16.accumulated_power;
             //*((uint16_t *)(dat + 12)) = p_profile->page_16.instantaneous_power;
             //can_send(dat, 8);
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 16 was updated");
             break;
 
         case ANT_BPWR_PAGE_17_UPDATED:
             // data actualization
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 17 was updated");
             break;
 
         case ANT_BPWR_PAGE_18_UPDATED:
             // data actualization
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 18 was updated");
             break;
 
         case ANT_BPWR_PAGE_80_UPDATED:
             // data actualization
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 80 was updated");
             break;
 
         case ANT_BPWR_PAGE_81_UPDATED:
             // data actualization
-            bsp_board_led_invert(BSP_BOARD_LED_3);
+            //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 81 was updated");
             break;
 

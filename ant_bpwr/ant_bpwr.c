@@ -40,6 +40,7 @@
 #include "sdk_common.h"
 #if NRF_MODULE_ENABLED(ANT_BPWR)
 
+#include "bsp.h"
 #include "nrf_assert.h"
 #include "nrf_delay.h"
 #include "nrf_drv_spi.h"
@@ -324,6 +325,9 @@ static void disp_message_decode(ant_bpwr_profile_t * p_profile, uint8_t * p_mess
             return;
     }
   
+    // recieve LED
+    bsp_board_led_invert(BSP_BOARD_LED_2);
+    
     // make payload
     uint8_t payload[8];
     payload[0] = p_bpwr_message_payload->page_number;
@@ -343,8 +347,7 @@ static void disp_message_decode(ant_bpwr_profile_t * p_profile, uint8_t * p_mess
     while(can_retry_count --){
       uint8_t ret = MCP2515_packet_send(&spi, payload, sizeof(payload), msg);
       if (ret == 0) {
-        //bsp_board_led_invert(BSP_BOARD_LED_3);
-        //bsp_board_led_off(BSP_BOARD_LED_0);
+        bsp_board_led_invert(BSP_BOARD_LED_3);
         break;
       }
       else {
