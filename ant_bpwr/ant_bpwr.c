@@ -332,12 +332,15 @@ static void disp_message_decode(ant_bpwr_profile_t * p_profile, uint8_t * p_mess
     uint8_t payload[8];
     payload[0] = p_bpwr_message_payload->page_number;
     memcpy(payload + 1, p_bpwr_message_payload->page_payload, 7);
+    /*
+    // Debug output for visualize payload.
     NRF_LOG_RAW_INFO("Payload: ")
     for(uint8_t i=0; i < 8; i ++){
       NRF_LOG_RAW_INFO("0x%02X ", payload[i]);
     }
     NRF_LOG_RAW_INFO("\n")
-    
+    */ 
+
     // CAN send
     extern nrf_drv_spi_t spi;
     static uint16_t can_error_counter = 0;
