@@ -338,6 +338,7 @@ int main(void)
     spi_config.miso_pin = SPI_MISO_PIN;
     spi_config.mosi_pin = SPI_MOSI_PIN;
     spi_config.sck_pin  = SPI_SCK_PIN;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_8M;
     APP_ERROR_CHECK(nrf_drv_spi_init(&spi, &spi_config, NULL, NULL));
 
     MCP2515_init(&spi);
