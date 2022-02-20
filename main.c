@@ -330,7 +330,7 @@ static void log_init(void)
  */
 int main(void)
 {
-    uint8_t i = 0;
+    //uint8_t i = 0;
     log_init();
 
     nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG;
@@ -350,7 +350,7 @@ int main(void)
 
     for (;;)
     {
-        NRF_LOG_INFO("Running. %d", i++);
+        //NRF_LOG_INFO("Running. %d", i++);
         NRF_LOG_FLUSH();
         nrf_pwr_mgmt_run();
     }
