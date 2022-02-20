@@ -79,7 +79,7 @@
 #include "nrf_log_default_backends.h"
 
 #include "MCP2515.h"
-#include "can.h"
+//#include "can.h"
 
 #define APP_ANT_OBSERVER_PRIO       1                                                               /**< Application's ANT observer priority. You shouldn't need to modify this value. */
 #define SPI_INSTANCE  0 /**< SPI instance index. */

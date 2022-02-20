@@ -105,8 +105,6 @@
     <folder Name="Application">
       <file file_name="main.c" />
       <file file_name="./config/sdk_config.h" />
-      <file file_name="can.c" />
-      <file file_name="can.h" />
       <file file_name="../MCP2515_Lib/MCP2515.c" />
     </folder>
     <folder Name="nRF_Segger_RTT">
