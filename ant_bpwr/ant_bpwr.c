@@ -333,7 +333,6 @@ static void disp_message_decode(ant_bpwr_profile_t * p_profile, uint8_t * p_mess
     payload[0] = p_bpwr_message_payload->page_number;
     memcpy(payload + 1, p_bpwr_message_payload->page_payload, 7);
     NRF_LOG_RAW_INFO("Payload: ")
-    //NRF_LOG_RAW_INFO("0x%02X ", p_bpwr_message_payload->page_number);
     for(uint8_t i=0; i < 8; i ++){
       NRF_LOG_RAW_INFO("0x%02X ", payload[i]);
     }

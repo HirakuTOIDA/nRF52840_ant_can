@@ -202,11 +202,6 @@ void ant_bpwr_evt_handler(ant_bpwr_profile_t * p_profile, ant_bpwr_evt_t event)
 
         case ANT_BPWR_PAGE_16_UPDATED:
             // data actualization
-            //*(dat + 8) = p_profile->page_16.pedal_power.byte;
-            //*(dat + 9) = p_profile->page_16.update_event_count;
-            //*((uint16_t *)(dat + 10)) = p_profile->page_16.accumulated_power;
-            //*((uint16_t *)(dat + 12)) = p_profile->page_16.instantaneous_power;
-            //can_send(dat, 8);
             //bsp_board_led_invert(BSP_BOARD_LED_3);
             NRF_LOG_DEBUG("Page 16 was updated");
             break;
