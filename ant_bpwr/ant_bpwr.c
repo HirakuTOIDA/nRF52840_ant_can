@@ -41,6 +41,8 @@
 #if NRF_MODULE_ENABLED(ANT_BPWR)
 
 #include "nrf_assert.h"
+#include "nrf_delay.h"
+#include "nrf_drv_spi.h"
 #include "app_error.h"
 #include "ant_interface.h"
 #include "ant_bpwr.h"
@@ -53,6 +55,7 @@
 #define NRF_LOG_LEVEL       0
 #endif // ANT_BPWR_LOG_ENABLED
 #include "nrf_log.h"
+#include "nrf_log_ctrl.h"
 NRF_LOG_MODULE_REGISTER();
 
 #define BPWR_CALIB_INT_TIMEOUT ((ANT_CLOCK_FREQUENCY * BPWR_CALIBRATION_TIMOUT_S) / BPWR_MSG_PERIOD) // calibration timeout in ant message period's unit
@@ -321,16 +324,36 @@ static void disp_message_decode(ant_bpwr_profile_t * p_profile, uint8_t * p_mess
             return;
     }
   
-    uint8_t dat[8];
-    dat[0] = p_bpwr_message_payload->page_number;
-    memcpy(dat + 1, p_bpwr_message_payload->page_payload, 7);
+    // make payload
+    uint8_t payload[8];
+    payload[0] = p_bpwr_message_payload->page_number;
+    memcpy(payload + 1, p_bpwr_message_payload->page_payload, 7);
     NRF_LOG_RAW_INFO("Payload: ")
     //NRF_LOG_RAW_INFO("0x%02X ", p_bpwr_message_payload->page_number);
     for(uint8_t i=0; i < 8; i ++){
-      NRF_LOG_RAW_INFO("0x%02X ", dat[i]);
+      NRF_LOG_RAW_INFO("0x%02X ", payload[i]);
     }
     NRF_LOG_RAW_INFO("\n")
-    can_send(dat, sizeof(dat));
+    
+    // CAN send
+    extern nrf_drv_spi_t spi;
+    static uint16_t can_error_counter = 0;
+    uint16_t msg = (uint16_t)('T' - 0x41) << 2; // Standard identifier (11 bits), T page: 0x54->0x4C
+    uint8_t can_retry_count = 10;
+    while(can_retry_count --){
+      uint8_t ret = MCP2515_packet_send(&spi, payload, sizeof(payload), msg);
+      if (ret == 0) {
+        //bsp_board_led_invert(BSP_BOARD_LED_3);
+        //bsp_board_led_off(BSP_BOARD_LED_0);
+        break;
+      }
+      else {
+        can_error_counter ++;
+        NRF_LOG_INFO("%5d: Send #%02d, TXB0CTRL: 0x%02x", can_error_counter, 10 - can_retry_count, ret);
+        NRF_LOG_FLUSH();
+        nrf_delay_us(500);
+      }
+    }
 
     p_profile->evt_handler(p_profile, (ant_bpwr_evt_t)p_bpwr_message_payload->page_number);
 }
